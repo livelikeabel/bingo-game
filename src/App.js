@@ -1,25 +1,18 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BingoTable from './components/BingoTable';
-import { setGameStatus } from './reducers/bingo';
+import { setGameStatus, compareBingoResult } from './reducers/bingo';
 import './App.scss';
 
 class App extends Component {
 
-  componentDidUpdate(prevProps) {
-    // 빙고게임의 종료 로직이 있다. 옮겨야 한다.
-    // this._checkBingoCompleted();
+  componentDidUpdate() {
+    const { player1, player2 } = this.props;
+    if (player1.bingoCount >= 5 || player2.bingoCount >= 5) {
+      this.props.compareBingoResult();
+    }
   }
-
-  // _checkBingoCompleted = () => {
-  //   const { bingo, bingo: { player1, player2 }, player } = this.props;
-  //   if (bingo[player].bingoCount >= 5) {
-  //     player1.bingoCount === player2.bingoCount ?
-  //       alert('무승부 입니다 :)') :
-  //       alert(`${player}가 빙고를 완성했습니다!`);
-  //     this.props.setGameStatus(false);
-  //   }
-  // }
 
   render() {
     const { setGameStatus, gameStatus, player1, player2 } = this.props;
@@ -46,9 +39,17 @@ class App extends Component {
   }
 }
 
+App.propTypes = {
+  gameStatus: PropTypes.bool,
+  player1: PropTypes.object,
+  player2: PropTypes.object,
+  setGameStatus: PropTypes.func,
+  compareBingoResult: PropTypes.func
+};
+
 const mapStateToProps = ({ bingo: { gameStatus, player1, player2 } }) => ({
   gameStatus, player1, player2
 });
-const mapDispatchToProps = { setGameStatus };
+const mapDispatchToProps = { setGameStatus, compareBingoResult };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

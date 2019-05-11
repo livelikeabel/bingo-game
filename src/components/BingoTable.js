@@ -44,8 +44,11 @@ class BingoTable extends Component {
 }
 
 BingoTable.propTypes = {
-  player: PropTypes.string.isRequired
-}
+  player: PropTypes.string.isRequired,
+  bingo: PropTypes.object,
+  gameStatus: PropTypes.bool,
+  block: PropTypes.object
+};
 
 const mapStateToProps = ({ bingo, bingo: { gameStatus, block } }) => ({
   bingo, gameStatus, block
