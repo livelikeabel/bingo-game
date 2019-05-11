@@ -43,3 +43,30 @@ export const getBlockStatus = (currentPlayer, location, tableRect, block) => {
   ) return null;
   return stage[parseInt((pageY - top) / size)][parseInt((pageX - left) / size)]
 }
+
+export const countBingo = stage => {
+  let bingoCount = 0;
+  // 행검사
+  stage.forEach(row => {
+    const checkeds = row.filter(block => block.checked === true);
+    if (checkeds.length === 5) bingoCount++
+  })
+  // 열검사
+  stage.forEach((row, i) => {
+    let colCount = 0;
+    row.forEach((_, j) => {
+      if (stage[j][i].checked) colCount++;
+    })
+    if (colCount === 5) bingoCount++;
+  })
+  // 왼쪽 대각선 검사
+  const leftDiagonal = stage.filter((_, i) => stage[i][i].checked === true)
+  if (leftDiagonal.length === 5) bingoCount++;
+
+  // 오른쪽 대각선 검사
+  const rightDiagonal = stage.filter((row, i) => {
+    return stage[row.length - (i + 1)][i].checked === true
+  })
+  if (rightDiagonal.length === 5) bingoCount++;
+  return bingoCount
+}

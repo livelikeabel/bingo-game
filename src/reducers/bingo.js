@@ -1,14 +1,14 @@
-import { initStage, sortStage, checkNumber, getBlockStatus } from '../utils';
+import { initStage, sortStage, checkNumber, getBlockStatus, countBingo } from '../utils';
 const ROW = 5;
 const COL = 5;
 
 export const SET_GAME_STATUS = 'SET_GAME_STATUS';
 export const CHECK_BLOCK = 'CHECK_BLOCK';
-export const SET_BINGO_COUNT = 'SET_BINGO_COUNT';
+export const CALCULATE_BINGO_COUNT = 'CALCULATE_BINGO_COUNT';
 
 export const setGameStatus = gameStatus => ({ type: SET_GAME_STATUS, gameStatus });
 export const checkBlock = (player, location, tableRect) => ({ type: CHECK_BLOCK, player, location, tableRect });
-export const setBingoCount = (player, bingoCount) => ({ type: SET_BINGO_COUNT, player, bingoCount })
+export const calculateBingoCount = (player, prevBingoCount) => ({ type: CALCULATE_BINGO_COUNT, player, prevBingoCount });
 
 const INITIAL_STATE = {
   gameStatus: false,
@@ -57,7 +57,7 @@ const bingo = (state = { ...INITIAL_STATE }, action) => {
       }
       const block = getBlockStatus(currentPlayer, location, tableRect, state.block);
       if (block && !block.checked) {
-        const {number} = block;
+        const { number } = block;
         return {
           ...state,
           player1: { ...player1, stage: checkNumber(number, player1.stage), turn: !player1.turn },
@@ -66,12 +66,14 @@ const bingo = (state = { ...INITIAL_STATE }, action) => {
       }
       return state;
     }
-    case SET_BINGO_COUNT: {
-      let { player, bingoCount } = action;
-      return {
-        ...state,
-        [player]: { ...state[player], bingoCount }
+    case CALCULATE_BINGO_COUNT: {
+      let { player, prevBingoCount } = action;
+
+      const bingoCount = countBingo(state[player].stage);
+      if (prevBingoCount !== bingoCount) {
+        return { ...state, [player]: { ...state[player], bingoCount } };
       }
+      return state;
     }
     default:
       return state
